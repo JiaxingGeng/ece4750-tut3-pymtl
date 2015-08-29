@@ -1,0 +1,145 @@
+#!/bin/bash
+#=========================================================================
+# .update [options]
+#=========================================================================
+#
+#  -h  Display this message
+#  -v  Verbose mode
+#
+# Update the current public release from the correct branch in the
+# labs repo.
+#
+# Author : Christopher Batten
+# Date   : August 28, 2015
+
+#-------------------------------------------------------------------------
+# Command line parsing
+#-------------------------------------------------------------------------
+
+function usage
+{
+  echo ""
+  sed -n '3p' $0 | sed -e 's/#//'
+  sed -n '5,/^$/p' $0 | sed -e 's/#//'
+  exit 1
+}
+
+verbose=no
+while getopts "hv" OPTION; do
+  case $OPTION in
+    v)   verbose=yes ;;
+    h|?) usage ;;
+  esac
+done
+
+#-------------------------------------------------------------------------
+# source branch
+#-------------------------------------------------------------------------
+
+src_branch="tut3-pymtl"
+
+#-------------------------------------------------------------------------
+# main
+#-------------------------------------------------------------------------
+
+echo ""
+
+# Make sure working directory is not dirty
+
+echo " - make sure working directory not dirty"
+
+# if ( git diff --quiet ); then
+#   echo ""
+#   echo " ERROR: Dirty working directory"
+#   echo ""
+#   exit 1
+# fi
+
+# Make sure script is run in root of repo
+
+echo " - make sure script is run in root of repo"
+
+if [[ ! -f ".update" ]]; then
+  echo ""
+  echo " ERROR: Must run this script in root of repo"
+  echo ""
+  exit 1
+fi
+
+# Save current path
+
+echo " - save current path"
+
+topdir=${PWD}
+
+# Remove all content
+
+echo " - remove all content"
+
+rm -rf .gitignore
+rm -rf .travis.yml
+rm -rf *
+
+# Get last commit
+
+echo " - get last commit"
+
+last_commit=$(head -1 .changelog | cut -f1 -d' ')
+
+# Clone labs repo
+
+echo " - clone labs repo"
+
+git clone git@github.com:cornell-ece4750/ece4750-labs \
+  --branch ${src_branch} upstream
+
+# Create changelog
+
+echo " - create changelog"
+
+git --git-dir=${topdir}/upstream/.git \
+  log --oneline --no-color > .changelog
+
+# Create commit message
+
+echo " - create commit message"
+
+echo "automated update"  > .commitmsg
+echo ""                 >> .commitmsg
+
+git --git-dir=${topdir}/upstream/.git \
+  log --oneline --no-color ${last_commit}..HEAD >> .commitmsg
+
+# Remove upstream git repo
+
+echo " - remove upstream git repo"
+
+rm -rf ${topdir}/upstream/.git
+
+# Move all content from upstream
+
+echo " - move all content from upstream"
+
+shopt -s dotglob
+mv ${topdir}/upstream/* ${topdir}
+
+# Remove upstream
+
+echo " - remove upstream"
+
+rm -rf ${topdir}/upstream
+
+# Commit changes
+
+echo " - commit changes"
+
+git add .
+git rm --cached .commitmsg
+git commit --file=.commitmsg
+rm -rf .commitmsg
+
+# exit
+
+echo ""
+exit 0
+
