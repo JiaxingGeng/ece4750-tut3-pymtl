@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #=========================================================================
-# regincr-sim-v2 <input-values>
+# regincr-sim <input-values>
 #=========================================================================
 
 from pymtl   import *
@@ -15,15 +15,12 @@ input_values = [ int(x,0) for x in argv[1:] ]
 
 input_values.extend( [0]*3 )
 
-# Elaborate the model
-
-model = RegIncr()
-model.vcd_file = "regincr-sim.vcd"
-model.elaborate()
-
-# Create a simulator using simulation tool
-
-sim = SimulationTool( model )
+# ''' TUTORIAL TASK ''''''''''''''''''''''''''''''''''''''''''''''''''''''
+# This simulator script is incomplete. As part of the tutorial you will
+# need to add the code for constructing and elaborating a RegIncr model
+# before using the SimulationTool to create a simulator. Later in the
+# tutorial you will nee to add a line to enable VCD dumping.
+# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 # Reset simulator
 
@@ -37,9 +34,14 @@ for input_value in input_values:
 
   model.in_.value = input_value
 
-  # Display line trace
+  # ''' TUTORIAL TASK ''''''''''''''''''''''''''''''''''''''''''''''''''''
+  # In the following print statement we are directly using the model
+  # ports to create some tracing output. Later in the tutorial you will
+  # replace this with a call to the simulator's print_line_trace method.
+  # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-  sim.print_line_trace()
+  print " cycle = {}: in = {}, out = {}" \
+    .format( sim.ncycles, model.in_, model.out )
 
   # Tick simulator one cycle
 

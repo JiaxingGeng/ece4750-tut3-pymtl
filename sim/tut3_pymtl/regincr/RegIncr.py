@@ -29,15 +29,10 @@ class RegIncr( Model ):
       else:
         s.reg_out.next = s.in_
 
-    # Concurrent block modeling incrementer
-
-    # ''' TUTORIAL TASK ''''''''''''''''''''''''''''''''''''''''''''''''''
-    # Use a combinational concurrent block to model the incrementer
-    # logic. Remember to always use .value when writing signals from
-    # within a combinational concurrent block!
-
-  # Line Tracing
-
-  def line_trace( s ):
-    return "{} ({}) {}".format( s.in_, s.reg_out, s.out )
+    # ''' TUTORIAL TASK '''''''''''''''''''''''''''''''''''''''''''''''''''
+    # This model is incomplete. As part of the tutorial you will add a
+    # combinational concurrent block to model the incrementer logic, and
+    # later you will a line tracing function to compactly output the
+    # input, register, and output vaules.
+    # '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
